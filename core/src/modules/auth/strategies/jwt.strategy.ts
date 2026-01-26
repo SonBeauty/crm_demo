@@ -15,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
       secretOrKey: configService.get<string>(
         'JWT_SECRET',
-        'secret_key_tam_thoi',
+        'SECRET_KEY',
       ),
     });
   }
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const user = await this.usersService.findOneById(payload.sub);
 
     if (!user) {
-      throw new UnauthorizedException('User không tồn tại hoặc đã bị xóa');
+      throw new UnauthorizedException('User not found');
     }
 
     return { id: user.id, email: user.email, role: user.role };

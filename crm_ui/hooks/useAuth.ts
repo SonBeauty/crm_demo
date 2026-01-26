@@ -5,6 +5,7 @@ import { authService } from "@/services/auth.service";
 
 interface AuthState {
   user: User | null;
+  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (token: string, user: User) => void;
@@ -14,12 +15,13 @@ interface AuthState {
 
 export const useAuth = create<AuthState>((set) => ({
   user: null,
+  token: typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null,
   isAuthenticated: false,
   isLoading: true,
 
   login: (token, user) => {
     localStorage.setItem("accessToken", token);
-    set({ user, isAuthenticated: true });
+    set({ token, user, isAuthenticated: true });
   },
 
   logout: () => {

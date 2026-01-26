@@ -1,33 +1,47 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  Logger,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
+import { UsersService } from '../users/user.service';
+import { LoginDto, RegisterDto } from './dto';
+import { BCRYPT_SALT_ROUNDS } from '../../common/constants';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+  async register(registerDto: RegisterDto) {
+    const { email, password, name } = registerDto;
 
-    const user = await this.usersService.findOneByEmail(email);
-    if (!user) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
+    // Check if user already exists
+    const existingUser = await this.usersService.findOneByEmail(email);
+    if (existingUser) {
+      throw new ConflictException('Email already exists');
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      throw new UnauthorizedException('Email hoặc mật khẩu không đúng');
-    }
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
 
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    // Create user
+    const user = await this.usersService.createFromAuth({
+      email,
+      password: hashedPassword,
+      name,
+    });
+
+    this.logger.log(`User registered: ${user.email}`);
 
     return {
-      accessToken: this.jwtService.sign(payload),
+      message: 'User registered successfully',
       user: {
         id: user.id,
         email: user.email,
@@ -35,5 +49,38 @@ export class AuthService {
         role: user.role,
       },
     };
+  }
+
+  async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+
+    const user = await this.usersService.findOneByEmail(email);
+    if (!user) {
+      throw new UnauthorizedException('Email or password is incorrect');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email or password is incorrect');
+    }
+
+    const payload = { sub: user.id, email: user.email, role: user.role };
+    const accessToken = this.jwtService.sign(payload);
+
+    this.logger.log(`User logged in: ${user.email}`);
+
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    };
+  }
+
+  async validateUser(userId: string) {
+    return this.usersService.findOneById(userId);
   }
 }

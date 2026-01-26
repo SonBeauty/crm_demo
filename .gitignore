@@ -1,8 +1,6 @@
-# --- Dependencies (Bắt buộc) ---
 node_modules/
 **/node_modules/
 
-# --- Environment Variables (Bảo mật) ---
 .env
 .env.local
 .env.development.local
