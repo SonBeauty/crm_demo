@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto'; // Bạn tự tạo DTO này nhé (email, password)
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
