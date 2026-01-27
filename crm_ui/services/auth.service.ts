@@ -7,6 +7,7 @@ export const authService = {
       email,
       password,
     });
+    console.log("auth", data);
     return data;
   },
 

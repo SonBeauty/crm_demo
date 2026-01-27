@@ -30,7 +30,7 @@ import {
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get<string>('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 3306),
+        port: configService.get<number>('DB_PORT', 3307),
         username: configService.get<string>('DB_USER', 'root'),
         password: configService.get<string>('DB_PASS', ''),
         database: configService.get<string>('DB_NAME', 'crm_db'),

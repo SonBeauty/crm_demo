@@ -1,9 +1,11 @@
 import { api } from "@/libs/api";
-import { CreateUserDto, User } from "@/types";
+import { CreateUserDto, PaginatedResult, User } from "@/types";
 
 export const userService = {
-  getAll: async (): Promise<User[]> => {
-    const { data } = await api.get<User[]>("users");
+  getAll: async (params?: string): Promise<PaginatedResult<User>> => {
+    const { data } = await api.get<PaginatedResult<User>>("users", {
+      params: params,
+    });
     return data;
   },
 

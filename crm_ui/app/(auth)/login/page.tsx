@@ -26,8 +26,9 @@ export default function LoginPage() {
     try {
       await new Promise((r) => setTimeout(r, 800));
 
-      const data = await authService.login(email, password);
-      loginState(data.accessToken, data.user);
+      const { data } = await authService.login(email, password);
+      console.log("data", data?.accessToken);
+      loginState(data?.accessToken, data?.user);
       router.push("/dashboard");
     } catch (err) {
       setError("Email hoặc mật khẩu không chính xác");

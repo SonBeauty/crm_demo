@@ -25,28 +25,27 @@ export class NotificationsGateway
 
   async handleConnection(client: Socket) {
     try {
-      // Extract token from handshake auth or query
-      const token =
-        client.handshake.auth.token || client.handshake.query.token;
+      const token = client.handshake.auth.token || client.handshake.query.token;
 
       if (!token) {
         this.logger.warn(`Client ${client.id} connected without token`);
-        // Optional: client.disconnect();
         return;
       }
 
-      // Verify token
       const payload = this.jwtService.verify(token);
-      
-      // Store user info in socket data
+
       client.data.user = payload;
-      
-      // Join a room based on user ID for private notifications
+
       client.join(`user:${payload.sub}`);
-      
-      this.logger.log(`Client connected: ${client.id} (User: ${payload.email})`);
+
+      this.logger.log(
+        `Client connected: ${client.id} (User: ${payload.email})`,
+      );
     } catch (error) {
-      this.logger.error(`Connection authentication failed for ${client.id}`, error);
+      this.logger.error(
+        `Connection authentication failed for ${client.id}`,
+        error,
+      );
       client.disconnect();
     }
   }
@@ -55,16 +54,10 @@ export class NotificationsGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  /**
-   * Broadcast an event to all connected clients
-   */
   broadcast(event: string, data: any) {
     this.server.emit(event, data);
   }
 
-  /**
-   * Send an event to a specific user
-   */
   sendToUser(userId: string, event: string, data: any) {
     this.server.to(`user:${userId}`).emit(event, data);
   }

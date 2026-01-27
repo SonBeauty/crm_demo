@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2, Save } from 'lucide-react';
-import Link from 'next/link';
-import { toast } from 'sonner';
-import { userService } from '@/services/user.service';
-import { CreateUserDto } from '@/types';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2, Save } from "lucide-react";
+import Link from "next/link";
+import { toast } from "sonner";
+import { userService } from "@/services/user.service";
+import { CreateUserDto, Role } from "@/types";
 
 export default function NewUserPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<CreateUserDto>({
-    name: '',
-    email: '',
-    password: '',
-    role: 'EMPLOYEE',
+    name: "",
+    email: "",
+    password: "",
+    role: "EMPLOYEE",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,12 +26,12 @@ export default function NewUserPage() {
       const response = await userService.create(formData);
 
       if (!response) {
-        throw new Error('Failed to create user');
+        throw new Error("Failed to create user");
       }
-      toast.success('User created successfully');
+      toast.success("User created successfully");
       // router.push('/dashboard/users');
     } catch (error) {
-      toast.error('Failed to create user');
+      toast.error("Failed to create user");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -49,7 +49,9 @@ export default function NewUserPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-white">Create New User</h1>
-          <p className="text-slate-400 text-sm">Add a new member to your team</p>
+          <p className="text-slate-400 text-sm">
+            Add a new member to your team
+          </p>
         </div>
       </div>
 
@@ -63,7 +65,9 @@ export default function NewUserPage() {
               type="text"
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               placeholder="John Doe"
             />
@@ -77,7 +81,9 @@ export default function NewUserPage() {
               type="email"
               required
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               placeholder="john@example.com"
             />
@@ -93,20 +99,24 @@ export default function NewUserPage() {
                 required
                 minLength={6}
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
                 placeholder="••••••••"
               />
-              <p className="text-xs text-slate-500">Must be at least 6 characters</p>
+              <p className="text-xs text-slate-500">
+                Must be at least 6 characters
+              </p>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">
-                Role
-              </label>
+              <label className="text-sm font-medium text-slate-300">Role</label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value as Role })
+                }
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               >
                 <option value="EMPLOYEE">Employee</option>

@@ -60,7 +60,14 @@ export class UsersService {
       .orderBy('user.createdAt', 'DESC')
       .skip(skip)
       .take(limit)
-      .select(['user.id', 'user.email', 'user.name', 'user.role', 'user.createdAt', 'user.updatedAt'])
+      .select([
+        'user.id',
+        'user.email',
+        'user.name',
+        'user.role',
+        'user.createdAt',
+        'user.updatedAt',
+      ])
       .getManyAndCount();
 
     return new PaginatedResponseDto(items, total, page, limit);

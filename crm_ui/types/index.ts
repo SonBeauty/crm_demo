@@ -6,6 +6,7 @@ export interface User {
   email: string;
   role: Role;
   avatar?: string;
+  createdAt: string;
 }
 
 export interface SocketNotification {
@@ -15,8 +16,10 @@ export interface SocketNotification {
 }
 
 export interface AuthResponse {
-  accessToken: string;
-  user: User;
+  data: {
+    accessToken: string;
+    user: User;
+  };
 }
 
 export interface CreateUserDto {
@@ -24,4 +27,17 @@ export interface CreateUserDto {
   email: string;
   password?: string;
   role: Role;
+}
+
+export interface PaginatedResult<T> {
+  data: {
+    items: T[];
+    meta: {
+      totalItems: number;
+      itemCount: number;
+      itemsPerPage: number;
+      totalPages: number;
+      currentPage: number;
+    };
+  };
 }

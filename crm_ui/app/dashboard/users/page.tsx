@@ -1,52 +1,45 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { Plus, Filter, Search, MoreVertical, Shield, Mail, Calendar } from 'lucide-react';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import {
+  Plus,
+  Filter,
+  Search,
+  MoreVertical,
+  Shield,
+  Mail,
+  Calendar,
+} from "lucide-react";
+import Link from "next/link";
 
-// Types (should be in a shared types file)
-type UserRole = 'ADMIN' | 'MANAGER' | 'USER';
+import { User, Role } from "@/types";
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  createdAt: string;
-}
-
-import { Suspense } from 'react';
+import { Suspense } from "react";
+import { userService } from "@/services/user.service";
 
 function UsersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  
+
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [roleFilter, setRoleFilter] = useState<string>(searchParams.get('role') || '');
+  const [roleFilter, setRoleFilter] = useState<string>(
+    searchParams.get("role") || "",
+  );
 
   const fetchUsers = async (role?: string) => {
     setIsLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
-      // Build query string
       const params = new URLSearchParams();
-      if (role) params.append('role', role);
-      
-      const response = await fetch(`${apiUrl}/users?${params.toString()}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(data.items);
-      }
+      if (role) params.append("role", role);
+
+      const { data } = await userService.getAll(params.toString());
+      console.log(data);
+      setUsers(data?.items);
     } catch (error) {
-      console.error('Failed to fetch users', error);
+      console.error("Failed to fetch users", error);
     } finally {
       setIsLoading(false);
     }
@@ -60,18 +53,21 @@ function UsersContent() {
     setRoleFilter(role);
     const params = new URLSearchParams(searchParams);
     if (role) {
-      params.set('role', role);
+      params.set("role", role);
     } else {
-      params.delete('role');
+      params.delete("role");
     }
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const getRoleBadgeColor = (role: UserRole) => {
+  const getRoleBadgeColor = (role: Role) => {
     switch (role) {
-      case 'ADMIN': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
-      case 'MANAGER': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      default: return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case "ADMIN":
+        return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+      case "MANAGER":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      default:
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
     }
   };
 
@@ -80,7 +76,9 @@ function UsersContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Users</h1>
-          <p className="text-slate-400 text-sm">Manage your team and customers</p>
+          <p className="text-slate-400 text-sm">
+            Manage your team and customers
+          </p>
         </div>
         <Link
           href="/dashboard/users/new"
@@ -94,7 +92,10 @@ function UsersContent() {
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+            size={18}
+          />
           <input
             type="text"
             placeholder="Search users..."
@@ -124,8 +125,12 @@ function UsersContent() {
               <tr className="border-b border-slate-700/50 bg-slate-900/50">
                 <th className="p-4 font-medium text-slate-400 text-sm">User</th>
                 <th className="p-4 font-medium text-slate-400 text-sm">Role</th>
-                <th className="p-4 font-medium text-slate-400 text-sm">Joined</th>
-                <th className="p-4 font-medium text-slate-400 text-sm">Actions</th>
+                <th className="p-4 font-medium text-slate-400 text-sm">
+                  Joined
+                </th>
+                <th className="p-4 font-medium text-slate-400 text-sm">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700/50">
@@ -143,7 +148,10 @@ function UsersContent() {
                 </tr>
               ) : (
                 users.map((user) => (
-                  <tr key={user.id} className="hover:bg-slate-800/30 transition-colors group">
+                  <tr
+                    key={user.id}
+                    className="hover:bg-slate-800/30 transition-colors group"
+                  >
                     <td className="p-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center border border-slate-600">
@@ -161,7 +169,9 @@ function UsersContent() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}>
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getRoleBadgeColor(user.role)}`}
+                      >
                         <Shield size={10} />
                         {user.role}
                       </span>
@@ -190,7 +200,11 @@ function UsersContent() {
 
 export default function UsersPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-slate-400">Loading...</div>
+      }
+    >
       <UsersContent />
     </Suspense>
   );

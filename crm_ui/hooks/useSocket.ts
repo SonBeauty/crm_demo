@@ -8,8 +8,8 @@ export const useSocket = () => {
 
   useEffect(() => {
     if (!token) return;
-
-    const socketInstance = io(process.env.NEXT_PUBLIC_API_URL!, {
+    console.log(process.env.SERVER);
+    const socketInstance = io(process.env.SERVER! || "http://localhost:4000", {
       auth: { token },
       query: { userId: user?.id },
     });
