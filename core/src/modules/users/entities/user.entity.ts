@@ -9,7 +9,8 @@ import {
 export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
-  USER = 'USER',
+  EMPLOYEE = 'EMPLOYEE',
+  USER = 'USER', // Temporarily back to fix migration
 }
 
 @Entity('users')
@@ -29,7 +30,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.USER,
+    default: UserRole.EMPLOYEE,
   })
   role: UserRole;
 

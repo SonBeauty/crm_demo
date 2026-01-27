@@ -29,7 +29,7 @@ export default function NewUserPage() {
         throw new Error("Failed to create user");
       }
       toast.success("User created successfully");
-      // router.push('/dashboard/users');
+      router.push('/dashboard/users');
     } catch (error) {
       toast.error("Failed to create user");
       console.error(error);

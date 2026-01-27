@@ -11,6 +11,7 @@ export const userService = {
 
   create: async (user: CreateUserDto): Promise<User> => {
     const { data } = await api.post<User>("users", user);
+    console.log(data);
     return data;
   },
 

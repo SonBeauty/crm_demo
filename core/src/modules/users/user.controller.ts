@@ -24,7 +24,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards';
 import { Roles } from '../../common/decorators';
 import { PaginationQueryDto } from '../../common/dto';
-import { ProducerService } from '../producer/producer.service';
 import { KAFKA_TOPICS, EVENT_KEYS } from '../../common/constants';
 
 @ApiTags('Users')
@@ -34,7 +33,6 @@ import { KAFKA_TOPICS, EVENT_KEYS } from '../../common/constants';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly producerService: ProducerService,
   ) {}
 
   @Post()
@@ -45,17 +43,6 @@ export class UsersController {
   @ApiResponse({ status: 403, description: 'Forbidden' })
   async create(@Body() createUserDto: CreateUserDto) {
     const newUser = await this.usersService.create(createUserDto);
-
-    // Emit event to Kafka
-    this.producerService.emitEvent(
-      KAFKA_TOPICS.NOTIFICATION_EVENTS,
-      EVENT_KEYS.NEW_USER,
-      {
-        userId: newUser.id,
-        email: newUser.email,
-        name: newUser.name,
-      },
-    );
 
     return {
       message: 'User created successfully',
@@ -97,17 +84,6 @@ export class UsersController {
   ) {
     const updatedUser = await this.usersService.update(id, updateUserDto);
 
-    // Emit event to Kafka
-    this.producerService.emitEvent(
-      KAFKA_TOPICS.NOTIFICATION_EVENTS,
-      EVENT_KEYS.USER_UPDATED,
-      {
-        userId: updatedUser.id,
-        email: updatedUser.email,
-        name: updatedUser.name,
-      },
-    );
-
     return {
       message: 'User updated successfully',
       user: new UserResponseDto(updatedUser),
@@ -122,13 +98,6 @@ export class UsersController {
   @ApiResponse({ status: 404, description: 'User not found' })
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     await this.usersService.remove(id);
-
-    // Emit event to Kafka
-    this.producerService.emitEvent(
-      KAFKA_TOPICS.NOTIFICATION_EVENTS,
-      EVENT_KEYS.USER_DELETED,
-      { userId: id },
-    );
 
     return { message: 'User deleted successfully' };
   }

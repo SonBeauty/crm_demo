@@ -7,6 +7,9 @@ import { CreateUserDto, UpdateUserDto } from './dto';
 import { PaginationQueryDto, PaginatedResponseDto } from '../../common/dto';
 import { BCRYPT_SALT_ROUNDS } from '../../common/constants';
 
+import { ProducerService } from '../producer/producer.service';
+import { KAFKA_TOPICS, EVENT_KEYS } from '../../common/constants';
+
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
@@ -14,6 +17,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly producerService: ProducerService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -30,6 +34,18 @@ export class UsersService {
     const savedUser = await this.usersRepository.save(newUser);
     this.logger.log(`User created: ${savedUser.email}`);
 
+    // Emit event to Kafka
+    this.producerService.emitEvent(
+      KAFKA_TOPICS.USER_EVENTS,
+      EVENT_KEYS.NEW_USER,
+      {
+        userId: savedUser.id,
+        email: savedUser.email,
+        name: savedUser.name,
+        role: savedUser.role,
+      },
+    );
+
     return savedUser;
   }
 
@@ -41,6 +57,19 @@ export class UsersService {
     const newUser = this.usersRepository.create(data);
     const savedUser = await this.usersRepository.save(newUser);
     this.logger.log(`User registered via auth: ${savedUser.email}`);
+
+    // Emit event to Kafka
+    this.producerService.emitEvent(
+      KAFKA_TOPICS.USER_EVENTS,
+      EVENT_KEYS.NEW_USER,
+      {
+        userId: savedUser.id,
+        email: savedUser.email,
+        name: savedUser.name,
+        role: savedUser.role,
+      },
+    );
+
     return savedUser;
   }
 
@@ -103,6 +132,18 @@ export class UsersService {
     const updatedUser = await this.usersRepository.save(user);
     this.logger.log(`User updated: ${updatedUser.email}`);
 
+    // Emit event to Kafka
+    this.producerService.emitEvent(
+      KAFKA_TOPICS.USER_EVENTS,
+      EVENT_KEYS.USER_UPDATED,
+      {
+        userId: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        role: updatedUser.role,
+      },
+    );
+
     return updatedUser;
   }
 
@@ -110,6 +151,13 @@ export class UsersService {
     const user = await this.findOneByIdOrFail(id);
     await this.usersRepository.remove(user);
     this.logger.log(`User deleted: ${user.email}`);
+
+    // Emit event to Kafka
+    this.producerService.emitEvent(
+      KAFKA_TOPICS.USER_EVENTS,
+      EVENT_KEYS.USER_DELETED,
+      { userId: id },
+    );
   }
 
   async findAllManagers(): Promise<User[]> {

@@ -34,7 +34,7 @@ function UsersContent() {
     try {
       const params = new URLSearchParams();
       if (role) params.append("role", role);
-
+      console.log(role);
       const { data } = await userService.getAll(params.toString());
       console.log(data);
       setUsers(data?.items);
@@ -112,7 +112,7 @@ function UsersContent() {
             <option value="">All Roles</option>
             <option value="ADMIN">Admin</option>
             <option value="MANAGER">Manager</option>
-            <option value="USER">User</option>
+            <option value="EMPLOYEE">Employee</option>
           </select>
         </div>
       </div>

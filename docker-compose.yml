@@ -12,7 +12,7 @@ services:
       MYSQL_USER: ${MYSQL_USER:-crm_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-crm_password}
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -23,35 +23,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Zookeeper (Required for Kafka)
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.9.0
-    container_name: crm_zookeeper
-    restart: unless-stopped
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    networks:
-      - crm_network
-
-  # Kafka Message Broker
-  kafka:
-    image: confluentinc/cp-kafka:7.9.0
-    container_name: crm_kafka
-    restart: unless-stopped
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    networks:
-      - crm_network
 
   # NestJS API Server
   api:
@@ -71,15 +42,11 @@ services:
       DB_PASS: ${MYSQL_PASSWORD:-crm_password}
       DB_NAME: ${MYSQL_DATABASE:-crm_db}
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key}
-      KAFKA_BROKERS: kafka:29092
-      KAFKA_CLIENT_ID: crm-core
     ports:
       - "4000:4000"
     depends_on:
       mysql:
         condition: service_healthy
-      kafka:
-        condition: service_started
     networks:
       - crm_network
 

@@ -1,6 +1,5 @@
 import Sidebar from '@/components/dashboard/Sidebar';
-import NotificationCenter from '@/components/dashboard/NotificationCenter';
-import { Toaster } from 'sonner';
+import Header from '@/components/dashboard/Header';
 
 export default function DashboardLayout({
   children,
@@ -8,15 +7,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <Toaster richColors position="top-right" theme="dark" />
-      <div className="flex">
-        <Sidebar />
-        <main className="flex-1 lg:ml-0 relative">
-          <div className="absolute top-4 right-4 z-50">
-            <NotificationCenter />
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        <Header />
+        <main className="flex-1 overflow-y-auto custom-scrollbar relative">
+          <div className="p-4 lg:p-8 max-w-7xl mx-auto w-full">
+            {children}
           </div>
-          <div className="min-h-screen p-4 lg:p-8">{children}</div>
         </main>
       </div>
     </div>

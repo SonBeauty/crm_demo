@@ -1,73 +1,82 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Kafka, Consumer } from 'kafkajs';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { NotificationsGateway } from './notifications.gateway';
 import { KAFKA_TOPICS } from '../../common/constants';
+import { KafkaMockService } from '../producer/kafka-mock.service';
 
 @Injectable()
-export class NotificationsConsumer implements OnModuleInit, OnModuleDestroy {
+export class NotificationsConsumer implements OnModuleInit {
   private readonly logger = new Logger(NotificationsConsumer.name);
-  private readonly kafka: Kafka;
-  private readonly consumer: Consumer;
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly notificationsGateway: NotificationsGateway,
-  ) {
-    const brokers = this.configService
-      .get<string>('KAFKA_BROKERS', 'localhost:9092')
-      .split(',');
-
-    this.kafka = new Kafka({
-      clientId: 'crm-notifications-consumer',
-      brokers,
-    });
-
-    this.consumer = this.kafka.consumer({ groupId: 'notifications-group' });
-  }
+    private readonly kafkaMock: KafkaMockService,
+  ) {}
 
   async onModuleInit() {
-    try {
-      await this.consumer.connect();
-      
-      // Subscribe to topics
-      await this.consumer.subscribe({
-        topic: KAFKA_TOPICS.NOTIFICATION_EVENTS,
-        fromBeginning: true,
-      });
-
-      this.logger.log('Kafka Consumer connected and subscribed');
-
-      await this.consumer.run({
-        eachMessage: async ({ topic, partition, message }) => {
-          try {
-            const key = message.key?.toString();
-            const value = message.value?.toString();
-            
-            if (key && value) {
-              const payload = JSON.parse(value);
-              this.logger.debug(`Received event [${key}] from topic [${topic}]`);
-              
-              // Broadcast the event to connected WebSocket clients
-              // The event name in Socket.IO will be the Kafka message key
-              this.notificationsGateway.broadcast(key, payload);
-            }
-          } catch (error) {
-            this.logger.error('Error processing Kafka message', error);
+    // Subscribe to topics
+    const topics = [KAFKA_TOPICS.NOTIFICATION_EVENTS, KAFKA_TOPICS.USER_EVENTS];
+    
+    topics.forEach(topic => {
+      this.kafkaMock.on(topic, async ({ topic, message }) => {
+        try {
+          const key = message.key?.toString();
+          const value = message.value?.toString();
+          
+          if (key && value) {
+            const payload = JSON.parse(value);
+            this.logger.debug(`Received mock event [${key}] from topic [${topic}]`);
+            await this.handleEvent(key, payload);
           }
-        },
+        } catch (error) {
+          this.logger.error('Error processing mock message', error);
+        }
       });
-    } catch (error) {
-      this.logger.error('Failed to connect Kafka Consumer', error);
+    });
+
+    this.logger.log(`Mock Consumer subscribed to: ${topics.join(', ')}`);
+  }
+
+  private async handleEvent(event: string, payload: any) {
+    switch (event) {
+      case 'NEW_USER':
+        await this.handleNewUser(payload);
+        break;
+      case 'USER_UPDATED':
+        await this.handleUserUpdated(payload);
+        break;
+      case 'USER_DELETED':
+        await this.handleUserDeleted(payload);
+        break;
+      default:
+        // Generic broadcast for other events
+        this.notificationsGateway.broadcast(event, payload);
     }
   }
 
-  async onModuleDestroy() {
-    try {
-      await this.consumer.disconnect();
-      this.logger.log('Kafka Consumer disconnected');
-    } catch (error) {
-      this.logger.error('Failed to disconnect Kafka Consumer', error);
+  private async handleNewUser(payload: any) {
+    this.notificationsGateway.broadcast('NEW_USER', {
+      message: `New user joined: ${payload.name || payload.email}`,
+      ...payload,
+    });
+  }
+
+  private async handleUserUpdated(payload: any) {
+    // Notify the specific user
+    if (payload.userId) {
+      this.notificationsGateway.sendToUser(payload.userId, 'USER_UPDATED', {
+        message: 'Your profile has been updated',
+        ...payload,
+      });
     }
+    
+    // Also broadcast to admins/others
+    this.notificationsGateway.broadcast('USER_UPDATED', payload);
+  }
+
+  private async handleUserDeleted(payload: any) {
+    this.notificationsGateway.broadcast('USER_DELETED', {
+      message: `User deleted: ${payload.userId}`,
+      ...payload,
+    });
   }
 }
