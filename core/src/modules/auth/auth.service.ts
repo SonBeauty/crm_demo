@@ -5,6 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/user.service';
 import { LoginDto, RegisterDto } from './dto';
@@ -17,6 +18,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -60,9 +62,10 @@ export class AuthService {
     }
 
     const payload = { sub: user.id, email: user.email, role: user.role };
+    const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '1d');
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '1d',
-    });
+      expiresIn: expiresIn as any,
+    } as any);
 
     this.logger.log(`User logged in: ${user.email}`);
 

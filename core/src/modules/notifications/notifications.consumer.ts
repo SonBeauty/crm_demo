@@ -13,7 +13,6 @@ export class NotificationsConsumer implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    // Subscribe to topics
     const topics = [KAFKA_TOPICS.NOTIFICATION_EVENTS, KAFKA_TOPICS.USER_EVENTS];
     
     topics.forEach(topic => {
@@ -48,7 +47,6 @@ export class NotificationsConsumer implements OnModuleInit {
         await this.handleUserDeleted(payload);
         break;
       default:
-        // Generic broadcast for other events
         this.notificationsGateway.broadcast(event, payload);
     }
   }
@@ -61,7 +59,6 @@ export class NotificationsConsumer implements OnModuleInit {
   }
 
   private async handleUserUpdated(payload: any) {
-    // Notify the specific user
     if (payload.userId) {
       this.notificationsGateway.sendToUser(payload.userId, 'USER_UPDATED', {
         message: 'Your profile has been updated',
@@ -69,7 +66,6 @@ export class NotificationsConsumer implements OnModuleInit {
       });
     }
     
-    // Also broadcast to admins/others
     this.notificationsGateway.broadcast('USER_UPDATED', payload);
   }
 

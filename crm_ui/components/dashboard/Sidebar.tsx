@@ -35,7 +35,7 @@ export default function Sidebar() {
 
       router.push("/login");
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
     }
 
     router.push("/login");
