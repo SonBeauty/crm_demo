@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // In production, restrict this to your frontend URL
+    origin: '*',
   },
 })
 export class NotificationsGateway
@@ -32,8 +32,9 @@ export class NotificationsGateway
         return;
       }
 
-      const payload = this.jwtService.verify(token);
-
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
       client.data.user = payload;
 
       client.join(`user:${payload.sub}`);

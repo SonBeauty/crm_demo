@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Users,
@@ -11,24 +11,38 @@ import {
   LogOut,
   Menu,
   X,
-} from 'lucide-react';
-import { useState } from 'react';
+} from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const navItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Users', href: '/dashboard/users', icon: Users },
-  { name: 'Orders', href: '/dashboard/orders', icon: ShoppingCart },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Users", href: "/dashboard/users", icon: Users },
+  { name: "Orders", href: "/dashboard/", icon: ShoppingCart },
+  { name: "Analytics", href: "/dashboard/", icon: BarChart3 },
+  { name: "Settings", href: "/dashboard/", icon: Settings },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("token");
+
+      router.push("/login");
+    } catch (e) {
+      console.log(e.message);
+    }
+
+    router.push("/login");
+  };
 
   return (
     <>
-      {/* Mobile menu button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-slate-800 text-white lg:hidden"
@@ -36,7 +50,6 @@ export default function Sidebar() {
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Overlay */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -44,17 +57,15 @@ export default function Sidebar() {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed top-0 left-0 z-40 h-screen w-64
           transform transition-transform duration-300 ease-in-out
           lg:translate-x-0 lg:static
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
         <div className="h-full flex flex-col bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-r border-slate-700/50">
-          {/* Logo */}
           <div className="p-6 border-b border-slate-700/50">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
@@ -67,7 +78,6 @@ export default function Sidebar() {
             </div>
           </div>
 
-          {/* Navigation */}
           <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -83,15 +93,15 @@ export default function Sidebar() {
                     transition-all duration-200 group
                     ${
                       isActive
-                        ? 'bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-white border border-violet-500/30 shadow-lg shadow-violet-500/10'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                        ? "bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-white border border-violet-500/30 shadow-lg shadow-violet-500/10"
+                        : "text-slate-400 hover:text-white hover:bg-slate-700/50"
                     }
                   `}
                 >
                   <Icon
                     size={20}
                     className={`transition-transform duration-200 group-hover:scale-110 ${
-                      isActive ? 'text-violet-400' : ''
+                      isActive ? "text-violet-400" : ""
                     }`}
                   />
                   <span className="font-medium">{item.name}</span>
@@ -103,7 +113,6 @@ export default function Sidebar() {
             })}
           </nav>
 
-          {/* User section */}
           <div className="p-4 border-t border-slate-700/50">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center">
@@ -113,11 +122,12 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-white truncate">
                   Admin User
                 </p>
-                <p className="text-xs text-slate-400 truncate">
-                  admin@crm.com
-                </p>
+                <p className="text-xs text-slate-400 truncate">admin@crm.com</p>
               </div>
-              <button className="p-2 text-slate-400 hover:text-red-400 transition-colors">
+              <button
+                onClick={handleLogout}
+                className="p-2 text-slate-400 hover:text-red-400 transition-colors"
+              >
                 <LogOut size={18} />
               </button>
             </div>

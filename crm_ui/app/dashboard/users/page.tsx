@@ -34,9 +34,7 @@ function UsersContent() {
     try {
       const params = new URLSearchParams();
       if (role) params.append("role", role);
-      console.log(role);
       const { data } = await userService.getAll(params.toString());
-      console.log(data);
       setUsers(data?.items);
     } catch (error) {
       console.error("Failed to fetch users", error);
