@@ -34,7 +34,7 @@ import {
         // username: configService.get<string>('DB_USER', 'root'),
         // password: configService.get<string>('DB_PASS', ''),
         // database: configService.get<string>('DB_NAME', 'crm_db'),
-        host: configService.get<string>('DB_HOST', 'mysql'),
+        url: configService.get<string>('DB_URL', 'mysql'),
         autoLoadEntities: true,
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
