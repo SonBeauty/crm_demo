@@ -10,7 +10,7 @@ export enum UserRole {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
   EMPLOYEE = 'EMPLOYEE',
-  USER = 'USER', // Temporarily back to fix migration
+  USER = 'USER',
 }
 
 @Entity('users')

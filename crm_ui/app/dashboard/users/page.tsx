@@ -45,7 +45,6 @@ function UsersContent() {
     email: "",
     role: "EMPLOYEE",
   });
-
   const fetchUsers = async (role?: string) => {
     setIsLoading(true);
     try {
@@ -64,7 +63,6 @@ function UsersContent() {
     fetchUsers(roleFilter);
   }, [roleFilter]);
 
-  // update menuRef when openMenuId changes so outside-click can be detected
   useEffect(() => {
     if (openMenuId) {
       menuRef.current = document.querySelector(
@@ -75,7 +73,6 @@ function UsersContent() {
     }
   }, [openMenuId]);
 
-  // Close menu when clicking outside
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       if (!menuRef.current) return;
@@ -149,13 +146,13 @@ function UsersContent() {
     if (!selectedUser) return;
     setEditLoading(true);
     try {
-      const updated = await userService.update(selectedUser.id, {
-        ...selectedUser,
+      await userService.update(selectedUser.id, {
         name: editForm.name,
         email: editForm.email,
         role: editForm.role,
       });
-      setUsers((prev) => prev.map((u) => (u.id === updated.id ? updated : u)));
+
+      await fetchUsers(roleFilter);
       closeEdit();
     } catch (err) {
       console.error("Failed to save user", err);

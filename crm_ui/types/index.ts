@@ -9,6 +9,10 @@ export interface User {
   createdAt: string;
 }
 
+export interface getInfoResponse {
+  data: User;
+}
+
 export interface SocketNotification {
   type: "NEW_EMPLOYEE" | "UPDATE_ROLE" | "UPLOAD_DONE";
   message: string;

@@ -53,15 +53,14 @@ export default function EditUserPage() {
 
     try {
       // Prepare payload (exclude empty password)
-      const payload: Partial<User> = {
+      const payload: Partial<User> & { password?: string } = {
         name: formData.name,
         email: formData.email,
-        role: formData.role as any,
+        role: formData.role as Role,
       };
 
       if (formData.password) {
-        // backend may accept password field in update
-        (payload as any).password = formData.password;
+        payload.password = formData.password;
       }
 
       await userService.update(id, payload as any);
@@ -99,24 +98,32 @@ export default function EditUserPage() {
       <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Full Name</label>
+            <label className="text-sm font-medium text-slate-300">
+              Full Name
+            </label>
             <input
               type="text"
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               placeholder="John Doe"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300">Email Address</label>
+            <label className="text-sm font-medium text-slate-300">
+              Email Address
+            </label>
             <input
               type="email"
               required
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               placeholder="john@example.com"
             />
@@ -124,23 +131,31 @@ export default function EditUserPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-300">Password</label>
+              <label className="text-sm font-medium text-slate-300">
+                Password
+              </label>
               <input
                 type="password"
                 minLength={6}
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
                 placeholder="Leave empty to keep current password"
               />
-              <p className="text-xs text-slate-500">Leave empty to keep current password</p>
+              <p className="text-xs text-slate-500">
+                Leave empty to keep current password
+              </p>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-300">Role</label>
               <select
                 value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value as Role })}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value as Role })
+                }
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500/50"
               >
                 <option value="EMPLOYEE">Employee</option>

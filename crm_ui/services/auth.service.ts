@@ -7,12 +7,11 @@ export const authService = {
       email,
       password,
     });
-    console.log("auth", data);
     return data;
   },
 
   getMe: async (): Promise<User> => {
-    const { data } = await api.get<User>("/api/v1/auth/me");
+    const { data } = await api.get<User>("/auth/me");
     return data;
   },
 

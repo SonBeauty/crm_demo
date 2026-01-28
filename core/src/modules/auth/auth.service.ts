@@ -64,7 +64,7 @@ export class AuthService {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const expiresIn = this.configService.get<string>('JWT_EXPIRES_IN', '1d');
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: expiresIn as any,
+      expiresIn: expiresIn as string,
     } as any);
 
     this.logger.log(`User logged in: ${user.email}`);
