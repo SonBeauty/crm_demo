@@ -17,24 +17,25 @@ import {
 
 @Module({
   imports: [
-    // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,
       load: [databaseConfig, appConfig, jwtConfig, kafkaConfig],
     }),
 
-    // Database
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        // host: configService.get<string>('DB_HOST', 'localhost'),
-        // port: configService.get<number>('DB_PORT', 3307),
-        // username: configService.get<string>('DB_USER', 'root'),
-        // password: configService.get<string>('DB_PASS', ''),
-        // database: configService.get<string>('DB_NAME', 'crm_db'),
-        url: configService.get<string>('DB_URL', 'mysql'),
+        host: configService.get<string>('DB_HOST', 'localhost'),
+        port: configService.get<number>('DB_PORT', 3307),
+        username: configService.get<string>('DB_USER', 'root'),
+        password: configService.get<string>('DB_PASS', ''),
+        database: configService.get<string>('DB_NAME', 'crm_db'),
+        ssl: {
+          rejectUnauthorized: false,
+        },
+        // url: configService.get<string>('DB_URL', 'mysql'),
         autoLoadEntities: true,
         synchronize: configService.get<string>('NODE_ENV') !== 'production',
         logging: configService.get<string>('NODE_ENV') === 'development',
@@ -42,7 +43,6 @@ import {
       inject: [ConfigService],
     }),
 
-    // Feature modules
     AuthModule,
     UsersModule,
     ProducerModule,
