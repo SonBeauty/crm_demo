@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { authService } from "@/services/auth.service";
 import { Loader2, Command, Eye, EyeOff } from "lucide-react"; // Icon từ lucide-react
-import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -27,7 +26,6 @@ export default function LoginPage() {
       await new Promise((r) => setTimeout(r, 800));
 
       const { data } = await authService.login(email, password);
-      console.log("data", data?.accessToken);
       loginState(data?.accessToken, data?.user);
       router.push("/dashboard");
     } catch (err) {
@@ -73,7 +71,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-black"
               />
             </div>
 
@@ -99,7 +97,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10"
+                  className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pr-10 text-black"
                 />
                 <button
                   type="button"

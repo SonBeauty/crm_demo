@@ -31,18 +31,16 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    let serverUrl = process.env.NEXT_PUBLIC_API_SERVER_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-    serverUrl = serverUrl.replace('/api/v1', '');
-    if (!serverUrl.startsWith('http')) {
-      serverUrl = `http://${serverUrl}`;
-    }
+    let serverUrl =
+      process.env.NEXT_PUBLIC_API_SERVER_URL || "http://localhost:4000";
+    serverUrl = serverUrl.replace("/api/v1", "");
 
     console.log("🔌 Initializing global socket connection to:", serverUrl);
 
     const socketInstance = io(serverUrl, {
       auth: { token },
       query: { userId: user.id },
-      transports: ['websocket', 'polling'],
+      transports: ["websocket", "polling"],
     });
 
     socketInstance.on("connect", () => {
