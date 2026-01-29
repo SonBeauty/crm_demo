@@ -5,6 +5,7 @@ export const ROLES_KEY = 'roles';
 export const KAFKA_TOPICS = {
   NOTIFICATION_EVENTS: 'notification_events',
   USER_EVENTS: 'user_events',
+  PRODUCT_EVENTS: 'product_events',
 } as const;
 
 // Event Keys
@@ -12,6 +13,9 @@ export const EVENT_KEYS = {
   NEW_USER: 'NEW_USER',
   USER_UPDATED: 'USER_UPDATED',
   USER_DELETED: 'USER_DELETED',
+  PRODUCT_CREATED: 'PRODUCT_CREATED',
+  PRODUCT_UPDATED: 'PRODUCT_UPDATED',
+  PRODUCT_DELETED: 'PRODUCT_DELETED',
 } as const;
 
 // API
