@@ -7,6 +7,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProducerModule } from './modules/producer/producer.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { ProductsModule } from './modules/products/products.module';
 import {
   envValidationSchema,
   databaseConfig,
@@ -47,6 +48,7 @@ import {
     UsersModule,
     ProducerModule,
     NotificationsModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
