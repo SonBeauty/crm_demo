@@ -26,6 +26,17 @@ export interface AuthResponse {
   };
 }
 
+export interface TaskResponse {
+  id: string;
+  title: string;
+  description?: string;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  ownerId?: string;
+  assignedToId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateUserDto {
   name: string;
   email: string;

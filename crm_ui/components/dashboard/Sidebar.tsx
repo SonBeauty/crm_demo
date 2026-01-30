@@ -11,6 +11,7 @@ import {
   LogOut,
   Menu,
   X,
+  LayoutListIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -19,6 +20,7 @@ const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Users", href: "/dashboard/users", icon: Users },
   { name: "Orders", href: "/dashboard/", icon: ShoppingCart },
+  { name: "Task", href: "/dashboard/tasks", icon: LayoutListIcon },
   { name: "Analytics", href: "/dashboard/", icon: BarChart3 },
   { name: "Settings", href: "/dashboard/", icon: Settings },
 ];
