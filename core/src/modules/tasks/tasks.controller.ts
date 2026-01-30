@@ -16,10 +16,12 @@ import {
   ApiOperation,
   ApiResponse,
   ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
 import { TasksService } from './task.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto';
 import { TaskResponseDto } from './dto/task-response.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards';
 
@@ -83,11 +85,17 @@ export class TasksController {
   @Patch(':id/status')
   @ApiParam({ name: 'id', description: 'Task UUID' })
   @ApiOperation({ summary: 'Update task status' })
+  @ApiResponse({
+    status: 200,
+    description: 'Task status updated',
+    type: TaskResponseDto,
+  })
+  @ApiBody({ type: UpdateTaskStatusDto })
   async updateStatus(
     @Param('id', ParseUUIDPipe) id: string,
-    @Body('status') status: any,
+    @Body() body: UpdateTaskStatusDto,
   ) {
-    const task = await this.tasksService.updateStatus(id, status);
+    const task = await this.tasksService.updateStatus(id, body.status);
     return new TaskResponseDto(task);
   }
 

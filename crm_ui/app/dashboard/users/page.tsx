@@ -108,7 +108,6 @@ function UsersContent() {
     }
   };
 
-  // client-side filtered users based on search query (name or email)
   const filteredUsers = users.filter((u) => {
     const q = query.trim().toLowerCase();
     if (!q) return true;
