@@ -37,6 +37,14 @@ export interface TaskResponse {
   updatedAt: string;
 }
 
+export interface Task {
+  title: string;
+  description?: string;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  ownerId?: string;
+  assignedToId?: string;
+}
+
 export interface CreateUserDto {
   name: string;
   email: string;

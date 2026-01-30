@@ -9,12 +9,29 @@ type Props = {
 };
 
 const columns = [
-  { key: "TODO", title: "To Do", backgroundColor: "blue" },
-  { key: "IN_PROGRESS", title: "In Progress", backgroundColor: "purple" },
-  { key: "DONE", title: "Done", backgroundColor: "green" },
+  {
+    key: "TODO",
+    title: "To Do",
+    backgroundColor: "#ffc53d",
+    boxShadow: "0 4px 14px rgba(0,0,0,0.45), 0 0 14px rgba(255, 193, 7, 0.35)",
+    borderColor: "#ffb900",
+  },
+  {
+    key: "IN_PROGRESS",
+    title: "In Progress",
+    backgroundColor: "#5a43d6",
+    borderColor: "#4c35c3",
+  },
+  {
+    key: "DONE",
+    title: "Done",
+    backgroundColor: "#299764",
+    borderColor: "#218c5d",
+  },
 ];
 
 export default function TaskBoard({ tasks, onStatusChange }: Props) {
+  console.log("props", tasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const onDragStart = (e: React.DragEvent, id: string) => {
@@ -43,13 +60,23 @@ export default function TaskBoard({ tasks, onStatusChange }: Props) {
           style={{
             flex: 1,
             minHeight: 300,
-            background: "transparent",
-            padding: 12,
+            background: "linear-gradient(180deg, #020617, #020617 70%, #000)",
+            padding: 8,
             borderRadius: 8,
-            border: "1px solid purple",
+            border: "3px solid #8d54ff40",
           }}
         >
-          <h3 style={{ marginTop: 0 }}>{col.title}</h3>
+          <div
+            style={{
+              marginTop: 0,
+              backgroundColor: col.backgroundColor,
+              boxShadow: col.boxShadow || "0 4px 14px rgba(0,0,0,0.25)",
+              border: `2px solid ${col.borderColor}`,
+            }}
+            className="font-semibold text-xl text-center text-white p-3 rounded-md mb-4 relative"
+          >
+            {col.title}
+          </div>
           {tasks !== undefined &&
             tasks.length > 0 &&
             tasks
