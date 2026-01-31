@@ -14,16 +14,18 @@ export class NotificationsConsumer implements OnModuleInit {
 
   async onModuleInit() {
     const topics = [KAFKA_TOPICS.NOTIFICATION_EVENTS, KAFKA_TOPICS.USER_EVENTS];
-    
-    topics.forEach(topic => {
+
+    topics.forEach((topic) => {
       this.kafkaMock.on(topic, async ({ topic, message }) => {
         try {
           const key = message.key?.toString();
           const value = message.value?.toString();
-          
+
           if (key && value) {
             const payload = JSON.parse(value);
-            this.logger.debug(`Received mock event [${key}] from topic [${topic}]`);
+            this.logger.debug(
+              `Received mock event [${key}] from topic [${topic}]`,
+            );
             await this.handleEvent(key, payload);
           }
         } catch (error) {
@@ -61,11 +63,11 @@ export class NotificationsConsumer implements OnModuleInit {
   private async handleUserUpdated(payload: any) {
     if (payload.userId) {
       this.notificationsGateway.sendToUser(payload.userId, 'USER_UPDATED', {
-        message: 'Your profile has been updated',
+        message: 'Your profile has been update',
         ...payload,
       });
     }
-    
+
     this.notificationsGateway.broadcast('USER_UPDATED', payload);
   }
 
