@@ -10,7 +10,6 @@ export default function Page() {
   const [modalOpen, setModalOpen] = useState(false);
   const [tasks, setTasks] = useState<TaskResponse[]>([]);
   const [loading, setLoading] = useState(false);
-  console.log("PAGE RENDERED");
 
   const load = async () => {
     setLoading(true);
