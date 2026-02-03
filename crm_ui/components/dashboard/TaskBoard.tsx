@@ -5,10 +5,16 @@ import { TaskResponse } from "../../types";
 
 type Props = {
   tasks: TaskResponse[];
-  onStatusChange: (id: string, status: string) => void;
+  onStatusChange: (id: string, status: TaskResponse["status"]) => void;
 };
 
-const columns = [
+const columns: {
+  key: TaskResponse["status"];
+  title: string;
+  backgroundColor?: string;
+  boxShadow?: string;
+  borderColor?: string;
+}[] = [
   {
     key: "TODO",
     title: "To Do",
@@ -31,7 +37,6 @@ const columns = [
 ];
 
 export default function TaskBoard({ tasks, onStatusChange }: Props) {
-  console.log("props", tasks);
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
   const onDragStart = (e: React.DragEvent, id: string) => {
@@ -43,7 +48,7 @@ export default function TaskBoard({ tasks, onStatusChange }: Props) {
     e.preventDefault();
   };
 
-  const onDrop = (e: React.DragEvent, status: string) => {
+  const onDrop = (e: React.DragEvent, status: TaskResponse["status"]) => {
     e.preventDefault();
     const id = e.dataTransfer.getData("text/plain") || draggingId;
     if (id) onStatusChange(id, status);

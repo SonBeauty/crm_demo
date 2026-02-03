@@ -31,8 +31,10 @@ export default function Page() {
     console.log("tasks updated:", tasks);
   }, [tasks]);
 
-  console.log("tasks", tasks);
-  const handleStatusChange = async (id: string, status: string) => {
+  const handleStatusChange = async (
+    id: string,
+    status: TaskResponse["status"],
+  ) => {
     try {
       await taskService.updateStatus(id, status);
       setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status } : t)));
