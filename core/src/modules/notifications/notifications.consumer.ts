@@ -63,7 +63,7 @@ export class NotificationsConsumer implements OnModuleInit {
   private async handleUserUpdated(payload: any) {
     if (payload.userId) {
       this.notificationsGateway.sendToUser(payload.userId, 'USER_UPDATED', {
-        message: 'Your profile has been update',
+        message: 'Your profile has been updated',
         ...payload,
       });
     }
